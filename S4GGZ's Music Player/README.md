@@ -1,0 +1,138 @@
+# S4GGZ — Windows x64
+
+Aplicație desktop nativă pentru **Windows 10/11, 64 de biți**, realizată în Rust cu egui și rodio. Pachetul este destinat exclusiv Windows.
+
+## Pornire
+
+Dublu clic pe **`S4GGZ.exe`** din folderul principal. Acesta pornește aplicația din `target\release`, păstrând locația muzicii existente. Păstrează executabilul de pornire împreună cu folderul `target`. Poți folosi și `START_WINDOWS.bat` sau direct `target\release\s4ggz.exe`. Nu sunt necesare Rust, Cargo, Python sau o instalare separată de FFmpeg pentru utilizare.
+
+`vcruntime140.dll` este inclus lângă launcher și player; păstrează ambele copii pentru pornire portabilă. `target\release` conține executabilul actual, temele din `assets`, FFmpeg cu fișierele sale de licență, muzica descărcată și coperțile personale din `AlbumArt`. Cache-urile de compilare și simbolurile de depanare se elimină din pachet. Aplicația ocupă sub **500 MB**, fără folderul `Music`, care conține biblioteca utilizatorului. Sursele și testele rămân în proiect și în `MENTENANTA.zip`. Detaliile istorice despre compactare sunt în [COMPACTARE-2026-11-03.md](COMPACTARE-2026-11-03.md).
+
+Lista separată a iconițelor personalizabile și instrucțiunile pentru adăugarea lor se găsesc în **`LISTA-ICONITE.md`**.
+
+Programul păstrează biblioteca, albumele, favoritele, căutarea, importul de directoare, redarea și coada, seek-ul și volumul, egalizatorul cu 10 benzi, coperțile, animațiile și căutarea/descărcarea de melodii. Interfața folosește permanent dark mode.
+
+Playerul are două controale: **Shuffle** și **Loop**. Butonul mare, lângă **Play/Pauză**, arată ultimul mod ales. Cel mic oval este suprapus în dreapta sus și selectează celălalt mod, inversând pozițiile celor două simboluri. Modurile nu pot fi active simultan. **Al doilea click pe modul activ îl dezactivează**, păstrând pozițiile butoanelor; încă un click îl reactivează. Când ambele sunt oprite, redarea urmează ordinea normală a cozii. Accentul urmează tema: cyan în Aqua, galben în Beer și roz în Disco. La pornire redarea este în ordine; Shuffle se activează la cerere.
+
+**Shuffle** amestecă piesele următoare ale colecției filtrate, păstrând piesa selectată prima. **Loop** repetă piesa curentă și dezactivează Shuffle; piesele rămase revin la ordinea normală. Next poate selecta manual următoarea piesă și în Loop. Schimbarea modului păstrează melodia, poziția, pauza și istoricul redării.
+
+Identificarea piesei din bara de jos ocupă un spațiu fix de **240 de puncte**, independent de lungimea titlului. Numai titlurile care nu încap se derulează orizontal dus-întors, cu o pauză de **o secundă la fiecare capăt**. Coperta, artistul și controalele rămân fixe. Schimbarea piesei reia titlul de la început; titlurile scurte rămân statice.
+
+Click oriunde pe cardul unui album pornește prima piesă și deschide lista albumului. Click dreapta deschide meniul **Deschide album**, **Add picture / Change picture** și **Redenumește albumul**. Alege o imagine din calculator; aplicația păstrează o copie în **`AlbumArt`**, lângă `S4GGZ.exe`, și referința relativă în `AlbumArt\index.json`. Originalul nu este modificat, iar coperta rămâne disponibilă după repornire sau după mutarea/ștergerea imaginii originale. Aceeași copertă apare și în bara de jos pentru piesele albumului; fotografiile se decupează central pentru forma pătrată, fără întindere. Păstrează folderul `AlbumArt` împreună cu aplicația.
+
+Dimensiunile întregii interfețe se adaptează automat la rezoluția monitorului, cu **1920 × 1080** ca referință. Fereastra inițială de **1280 × 790**, textul, iconițele, panourile și animațiile se scalează uniform, cu compensarea DPI Windows și cu un prag minim de **50%** din dimensiunea fizică de referință pentru text. La rezoluții mici, meniul lateral și paginile cu mult conținut se pot derula, astfel încât comenzile să rămână accesibile fără micșorarea excesivă a textului. Pe monitoare cu alt raport de aspect, proporțiile elementelor se păstrează fără întindere. Redimensionarea manuală și maximizarea rămân disponibile; mutarea ferestrei pe alt monitor recalculează scara și păstrează proporțiile dimensiunii alese. Egalizatorul urmează scara ferestrei principale, inclusiv dacă este mutat separat pe alt monitor.
+
+Scalarea este verificată pentru **360p (640 × 360)**, **480p (854 × 480 și 640 × 480)**, **720p (1280 × 720)**, **1366 × 768**, **Full HD**, **QHD** și **4K**, la DPI Windows de **100%, 150% și 200%**. Fereastra este limitată la spațiul liber rămas după bara de titlu și taskbar, iar conținutul meniului lateral se derulează când înălțimea este prea mică.
+
+Butonul **Egalizator** înlocuiește butonul Versuri și deschide reglajele audio: 10 benzi cu gain de **-12…+12 dB**, frecvență, Q și tip de filtru, plus **Master gain / Preamp** separat. Preseturile **Flat**, **Bass Boost**, **Treble Boost**, **Vocal** și **Rock** se aplică în timpul redării. Setările se păstrează după repornire, iar **Importă JSON / Exportă JSON** permit salvarea și încărcarea preseturilor personale. Detaliile de utilizare și procesare sunt în [EGALIZATOR.md](EGALIZATOR.md). În Queue, închiderea este un **X**, iar mutarea pieselor folosește săgeți desenate direct, fără dependență de font.
+
+**Egalizator** și **Coada** sunt în colțul din dreapta al barei de sus. Egalizatorul are slidere verticale alăturate într-o fereastră proprie, care se închide odată cu playerul. Coada are un X compact, fără linie de separare a panoului; cele patru butoane mici ale fiecărei piese o mută **prima**, **mai sus**, **mai jos** sau **ultima** în lista de așteptare. Mutarea la final ajunge la sfârșitul întregii cozi, inclusiv când sunt afișate numai primele 120 de piese.
+
+Egalizatorul afișează același fundal ca tema aleasă în player, inclusiv imaginea personalizată, în spatele tuturor controalelor și meniurilor. Schimbarea temei actualizează și fundalul egalizatorului.
+
+Toate controalele egalizatorului sunt în același panou de **frosted glass**. În tema **Aqua**, în spatele acestuia înoată doi pești animați, când opțiunea **Pești** este activă în Setări.
+
+În lista de melodii, iconița **coș de gunoi** șterge definitiv fișierul audio original (MP3, FLAC sau alt format acceptat), intrarea din bibliotecă și referințele sale din coadă și playlisturi. Popup-ul afișează piesa, calea fișierului și opțiunile **Anulează / Șterge definitiv**. După **4 ștergeri reușite în ultimele 60 de secunde**, următoarele ștergeri nu mai cer confirmare, iar lista afișează „Ștergere rapidă activă”. Confirmarea revine când rămân cel mult 3 ștergeri în acest interval; anulările și erorile nu se numără. Istoricul este păstrat numai pe durata sesiunii. Fișierele sunt eliminate direct, fără Coșul de reciclare. Dacă piesa ștearsă era în redare, playerul trece la următoarea piesă, păstrând starea Play/Pauză. La închiderea aplicației în timpul unei ștergeri, operația este finalizată înainte de ieșire.
+
+Listele de melodii afișează maximum **20 de piese pe pagină**, inclusiv în albume și Favorite. Pentru 68 de piese sunt disponibile 4 pagini; folosește butoanele Anterior/Următor din partea de jos a listei.
+
+Click pe orice zonă a unui rând (număr, titlu, artist, album sau durată) pornește piesa. Inima rămâne dedicată favoritelor. Antetele **TITLU**, **ARTIST** și **DURATĂ** sortează întreaga listă, inclusiv celelalte pagini; un nou click inversează ordinea. Titlul și artistul încep cu A–Z, iar durata cu piesele cele mai lungi. La pornirea unei piese, coada respectă sortarea și filtrul curent. În căutarea de pe pagina Download, **Enter** pornește căutarea la fel ca butonul Caută.
+
+Pentru un fundal personalizat, aplicația calculează media ponderată a culorilor vibrante din fotografie și adaptează tenta panourilor frosted glass. Pixelii transparenți sunt ignorați, iar culorile meniurilor rămân întunecate pentru lizibilitate. La revenirea la fundalul implicit revine și paleta originală.
+
+Textul este afișat fără contur negru, inclusiv în tema Beer. Contrastul se adaptează local: peste o zonă uniform luminoasă se folosește cerneală închisă, iar pe o fotografie cu zone luminoase și întunecate amestecate apare o umbră difuză sub zona textului. Meniurile și panourile cu fundal întunecat își păstrează textul alb și culorile secundare existente; adaptarea culorii se aplică textului din afara lor, după pixelii fotografiei din zona literelor. Adaptarea ține cont de decuparea fotografiei și de redimensionarea ferestrei și se aplică și peticelor luminoase dintr-o imagine în general întunecată.
+
+În **Setări → Temă**, alege **Aqua**, **Beer** sau **Disco**. Alegerea se aplică imediat și se păstrează după repornire. Resursele active sunt în `target\release\assets\Aqua`, `target\release\assets\Beer` și `target\release\assets\Disco`. Disco folosește `target\release\assets\Disco\discoball.png`. Iconițele generale și brandingul rămân comune, în `target\release\assets`. Copiile redundante din rădăcina proiectului au fost eliminate.
+
+**Disco** are accente roz și cyan, o bilă cu oglinzi multicolore iluminate și un halou cald, coborâtă pe o sfoară suspendată de marginea superioară a ferestrei, și o podea în perspectivă, alcătuită dintr-o grilă uniformă de pătrate egale. Fațetele luminoase și reflexele albe ale bilei sunt inspirate din imaginea de referință. Marginea îndepărtată a podelei acoperă întreaga lățime a ferestrei, iar grila se lărgește spre privitor, păstrând perspectiva înclinată. În Setări poți activa separat **Bila disco** și **Podeaua disco**, folosind iconițele lor monocrome; o linie peste simbol indică efectul oprit. Modul bilei se păstrează după repornire:
+
+| Modul bilei | Comportament |
+| --- | --- |
+| Party Mode | Rotație de 360° pe propria axă și balans fizic după lovirea cu cursorul; o mișcare mai rapidă produce un impuls mai puternic, iar bila revine treptat în poziția inițială. |
+| În mișcare | Rotație de 360° și raze în mișcare, cu poziția bilei fixă. |
+| Statică | Bila și direcțiile razelor rămân fixe; fiecare rază apare și dispare treptat prin fade, independent de celelalte, cu propriile schimbări de culoare. |
+
+**Număr total de raze** se reglează între **0 și 256**, separat pentru fiecare mod al bilei. Valorile implicite sunt **144 în Party Mode**, **108 în În mișcare** și **72 în Statică**; alegerile se păstrează după repornire. Numărul ales este totalul scenei. La **0**, razele și reflexiile lor dispar în toate modurile, iar bila iluminată și haloul rămân vizibile.
+
+Razele au direcții aleatorii stabile care urmăresc rotația și balansul bilei; direcțiile apropiate de poli sunt redistribuite, astfel încât rotația să rămână vizibilă. O parte dintre raze sunt orientate către panourile frosted glass vizibile. În modul Statică, atât fasciculul, cât și punctul său de impact apar și dispar prin același fade individual, fără deplasarea direcției; culoarea se schimbă când raza este stinsă. La un impact perpendicular apare un punct rotund; la un impact oblic se vede un scurt traseu proiectat și un punct alungit în direcția razei. Raza se oprește pe suprafața panoului, iar muchiile meniurilor pot reflecta lumina către alt panou sau către spațiul liber. Fotografia personalizată rămâne sub podea și bilă, iar ambele efecte sunt desenate sub meniuri.
+
+**Reflexii la marginea ferestrei** controlează probabilitatea de reflexie, între **0% și 100%**, cu **18% implicit**. Alegerea aleatorie rămâne stabilă pentru fiecare rază, fără pâlpâire de la un cadru la altul. O rază se poate reflecta cel mult o dată de marginea ferestrei; celelalte ies din cadru. La 0% sunt eliminate reflexiile ferestrei, iar muchiile meniurilor își păstrează comportamentul. Preferința se salvează după repornire.
+
+Podeaua reacționează la energia și accentele ritmice detectate în sunetul redat: piesele energice produc schimbări mai rapide și mai intense, iar pasajele calme produc tranziții mai lente. Fiecare dală își schimbă culoarea la momente proprii, cu o întârziere aleatorie față de beat, astfel încât dalele nu se schimbă toate simultan. Când redarea este oprită, în pauză sau nu există semnal audio, podeaua rămâne gri, fără iluminare.
+
+**Beer** folosește `Beer\beer-bg.png`, particulele `Beer\beer.png` și animația `Beer\beer-hand.png`, cu accente și glow galben cald. Butoanele monocrome din Setări reprezintă o halbă și o mână care ține o halbă; când efectul este oprit, simbolul este tăiat. Cantitatea particulelor urmează aceleași reguli ca bulele din Aqua. Animația mâinii apare la înălțimi aleatorii, din stânga sau dreapta: intrare **0,7 s**, shake **0,9 s**, retragere prin aceeași margine **0,4 s**. Mâna se afișează sub meniurile transparente. Rotația pornește din marginea antebrațului din PNG, la nivelul cotului, astfel încât halba să se ridice și să coboare în arc. Imaginea își păstrează proporțiile originale, iar capătul tăiat al antebrațului rămâne în afara ferestrei pe toată rotația. Dimensiunea și spațiul pentru rotație se adaptează ferestrei.
+
+| Frecvența mâinii | Interval aleatoriu între apariții |
+| --- | --- |
+| M-am pocait | 12–20 s |
+| Doar o bere | 5–10 s |
+| Hai la bere | 3–6 s; probabilitate de 40% să apară simultan din ambele margini |
+
+În **Aqua**, butoanele **Pești** și **Bule** activează sau dezactivează separat efectele. Iconița este tăiată cu o linie când efectul este oprit. Lângă fiecare efect activ apare un dropdown, iar alegerea se păstrează după repornire:
+
+| Nivel | Pești | Bule pe buton |
+| --- | --- | --- |
+| Mulți / Multe | 5, ca în versiunea inițială | 20–60 la hover, ca în versiunea inițială |
+| Mediu | 3 (jumătate din 5, rotunjită în sus) | Jumătate din numărul inițial, aproximativ 10–30 la hover |
+| Puțini / Puține | Exact 2 | 5–10, numai la click stânga, emise din cele două colțuri de sus |
+
+Apăsarea butonului stâng pe un pește îl face să înoate de **2,8 ori mai repede timp de 1,5 s** și produce bule în urma lui. Reacția începe la apăsare, inclusiv pe coadă și înotătoare, după poziția și rotația afișate. Dacă peștii se suprapun, reacționează peștele vizibil de deasupra; zonele transparente lasă clickul să ajungă la peștele de dedesubt. Un click întrerupe rotirea peștilor în jurul cursorului și reîncepe timpul de așteptare pentru această animație.
+
+Numărul de bule depinde de lățimea butonului. **Alege o imagine din PC** setează fundalul temei curente, iar **Restabilește fundalul implicit** revine la fundalul implicit al acelei teme. Fiecare temă își păstrează propriul fundal personalizat. Preferințele sunt salvate în `%LOCALAPPDATA%\AuraPlayer\settings.json`; fotografiile sunt copiate în `%LOCALAPPDATA%\AuraPlayer\background.png` pentru Aqua, `AuraPlayer\Beer\background.png` pentru Beer și `AuraPlayer\Disco\background.png` pentru Disco, fără modificarea originalului. Imaginile foarte mari sunt adaptate la maximum 3840 px pe latura lungă. Fotografiile personalizează tenta panourilor; accentele Aqua rămân cyan, Beer galben cald, iar Disco roz și cyan.
+
+Pagina **Descarcă melodii** are scroll vertical pentru întregul meniu, inclusiv în timpul descărcării, iar rezultatele căutării își păstrează propriul scroll.
+
+Poți căuta și adăuga alte melodii cât timp o descărcare rulează. **Coada de descărcări** apare în dreapta numai pe această pagină, separat de coada de redare, și folosește tema curentă. O singură piesă se descarcă la un moment dat, iar celelalte pornesc automat în ordinea adăugării, inclusiv după anularea sau eșecul uneia. Fiecare cerere păstrează propriul link, titlu și artist; modificarea formularului sau o căutare nouă nu le schimbă. Linkurile deja active sau în așteptare nu sunt adăugate din nou. Poți anula transferul activ, elimina o piesă în așteptare și reîncerca o descărcare eșuată/anulată. Panoul păstrează ultimele 20 de rezultate ale sesiunii; **Curăță istoricul** elimină numai aceste notificări. Descărcările continuă și când navighezi în alte secțiuni. La închiderea playerului, transferul activ este anulat, iar lista în așteptare nu se salvează.
+
+Pentru playlisturi, introdu linkul, selectează **Salvează ca: Album separat** sau **Playlist**, apoi folosește **Descarcă playlist**. Primele 200 de melodii disponibile intră individual în coada de descărcări. **Album separat** salvează piesele într-un album cu numele playlistului. **Playlist** creează sau reutilizează playlistul în secțiunea Playlisturi, iar piesele salvate apar și în albumul agregat **Descarcate**. Click dreapta pe un album afișează opțiunea **Redenumește albumul**.
+
+Click pe rândul unui playlist îl deschide, iar butonul **Play** pornește redarea. Click dreapta oferă **Redenumește playlistul**, **Șterge playlistul** (păstrează muzica) și **Șterge tot** (șterge playlistul și fișierele audio ale pieselor). Pentru albume, click dreapta oferă **Șterge albumul** (ascunde albumul din Albume și păstrează piesele în Toate piesele) și **Șterge tot** (șterge albumul și fișierele audio ale pieselor). Ștergerile cer confirmare. Click dreapta pe titlul unei melodii oferă **Redenumește melodia** și **Adaugă la playlist**. Poți alege un playlist existent sau să creezi unul nou; melodia rămâne și în albumul original. Titlurile redenumite se salvează în biblioteca Aura Player fără să modifice fișierele audio. Deschide secțiunea **Playlisturi** din bara laterală pentru a vedea și reda playlisturile create.
+
+Pentru clipurile YouTube blocate de restricția de vârstă, Aura Player caută automat pe SoundCloud aceeași piesă după titlu și artist numai când încearcă fallback-ul de descărcare. Fallback-ul nu citește cookie-uri și folosește numai formatul oferit de creator; dacă nu există o potrivire exactă disponibilă la descărcare, playerul explică motivul. Redarea obișnuită nu mai caută pe SoundCloud și nu afișează niciun popup. Pentru alte erori YouTube, opțiunea **Descarcă melodii → COOKIE-URI YOUTUBE** rămâne disponibilă, dar este opțională.
+
+Progresul este citit din ambele fluxuri de ieșire yt-dlp. Bara și procentul apar numai când există un procent real; în pregătire, conversie sau când serverul nu oferă dimensiunea transferului, apare **Descărcare în curs...** cu indicator animat, fără procent fictiv de 0%.
+
+Pagina **Acasă** are o singură zonă de scroll pentru bara de căutare, panoul de prezentare, statistici și colecția de albume. Rotița funcționează peste toate aceste panouri, fără un scroll separat care să rețină cursorul în albume. Se desenează numai rândurile de albume vizibile. Bila disco rămâne în spatele tuturor meniurilor și își păstrează poziționarea, modurile, balansul și regulile de interacțiune existente, inclusiv când panourile derulează peste ea.
+
+## Fișiere necesare și date personale
+
+Păstrează împreună conținutul folderului `target\release`:
+
+- `s4ggz.exe` — aplicația Windows.
+- `vcruntime140.dll` — runtime-ul Microsoft inclus lângă aplicație; proveniența este în `MICROSOFT-RUNTIME.txt`.
+- `assets\` — imaginile interfeței și animațiilor.
+- `ffmpeg\bin\ffmpeg.exe` și `ffmpeg\bin\ffprobe.exe` — conversia și verificarea descărcărilor; licența și informațiile distribuției sunt în `ffmpeg\`.
+- `Music\` — melodiile existente și cele descărcate ulterior.
+
+`Music` rămâne la aceeași cale, lângă executabil. Aplicația îl scanează la pornire, după descărcări și periodic. Pentru alte colecții folosește importul de folder din aplicație. Fișierele audio și imaginile existente nu sunt reduse în calitate.
+
+Baza de date, favoritele și istoricul sunt păstrate în **`%LOCALAPPDATA%\AuraPlayer\aura_library.sqlite3`**. Aceste date sunt în afara folderului programului. Baza de date memorează căi absolute: mutarea folderului programului sau a melodiilor poate necesita reimport și nu transferă automat favoritele/istoricul către noile căi. Pentru păstrarea bibliotecii existente, folosește executabilul la locația actuală.
+
+La prima căutare/descărcare, aplicația instalează automat `yt-dlp.exe` în **`%LOCALAPPDATA%\AuraPlayer\bin`**, din distribuția oficială GitHub, cu verificare SHA-256. Această operație și serviciile de căutare/descărcare necesită internet. FFmpeg și FFprobe sunt deja incluse în pachet. Descarcă numai conținut pe care ai dreptul să îl salvezi.
+
+## Comportament după remedierea QA
+
+- Redarea, încărcarea bibliotecii, versurile și citirea cozii se execută în fundal. Căutarea are debounce de 150 ms și maximum 512 caractere; rezultatele unei cereri vechi nu suprascriu cererea nouă.
+- Căutarea ignoră majusculele și diacriticele românești. `%` și `_` se caută literal. Toate albumele pot fi explorate, inclusiv după al 240-lea.
+- La finalul cozii, piesa rămâne selectată, iar Play o reia de la început. Next fără o destinație redabilă păstrează piesa curentă.
+- Importul verifică atât metadatele, cât și decoderul. **OPUS nu este suportat de motorul curent**: este raportat ca format nesuportat, fără modificarea fișierului original. Se pot folosi MP3, FLAC, WAV, AAC, M4A (AAC/ALAC), OGG/Vorbis și AIFF, cu codec valid. Erorile de import sunt afișate; favoritele pieselor temporar indisponibile se păstrează.
+- Titlul introdus manual la descărcare are prioritate față de metadatele platformei. Căutarea și descărcarea au butoane de anulare, limite de timp de 60 s pentru căutare/metadate și 30 min pentru transfer/conversie. Streamurile live și descărcările declarate peste 1 GiB sunt refuzate. Inițializarea yt-dlp are separat timeout HTTP de 120 s; anularea este verificată între operațiile de rețea și blocurile primite.
+- yt-dlp este pornit fără configurații și pluginuri externe preexistente; timeoutul de socket este 15 s, cu maximum două reîncercări. Numele sunt validate pentru restricțiile Windows.
+- La prima pornire cu noua versiune, o bibliotecă existentă primește automat o copie SQLite consistentă `aura_library.before-search-migration-<timestamp>.sqlite3` lângă baza de date, înainte de adăugarea coloanelor și indexurilor pentru căutare/sortare. Dacă backupul nu poate fi creat, migrarea este oprită și apare un mesaj de eroare. ID-urile, căile, favoritele și istoricul se păstrează. Pentru revenirea la o versiune veche, cu aplicația închisă, folosește copia de dinainte de migrare; triggerele noi depind de funcția înregistrată de versiunea corectată.
+
+## Reconstruire — numai pentru dezvoltare
+
+Sursele, testele, configurația Cargo și rapoartele QA sunt păstrate în **`MENTENANTA.zip`**. Pentru dezvoltare, extrage arhiva în folderul principal și copiază `target\release\assets` în `assets`; instrucțiunile sunt și în `RESTAURARE-SURSE.txt` din arhivă. Utilizarea normală pornește direct executabilul și nu reconstruiește cache-urile de compilare. Recompilarea recreează fișierele mari eliminate la compactare.
+
+Cu Rust 1.95+ și toolchain-ul Windows x64 MSVC instalate, din acest folder:
+
+```powershell
+cargo test --offline --locked
+cargo build --release --offline --locked
+```
+
+Modul offline necesită dependențele deja disponibile în cache-ul Cargo; pe un calculator nou trebuie descărcate mai întâi, de exemplu cu `cargo fetch --locked`. Compilarea recreează fișiere intermediare mari, care nu sunt necesare utilizării aplicației. Workflow-ul din `.github\workflows\build.yml` testează și compilează numai executabilul Windows x64; artefactul CI este executabilul, nu întregul pachet portabil cu FFmpeg.
+
+**Nu executa `cargo clean` și nu șterge integral `target`: în acest proiect, `target\release\Music` conține muzica utilizatorului, iar `target\release\ffmpeg` conține componente necesare descărcărilor.** Salvează-le separat înaintea unei curățări de dezvoltare.
+
+
